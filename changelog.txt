@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.2
+Date: 2024-04-02
+  Bugfixes:
+    - Fixed startup error when both Krastorio 2 and Cargo Ships are enabled
+  Locale:
+    - Added Russian translation (Shadow_Man)
+---------------------------------------------------------------------------------------------------
 Version: 0.0.1
 Date: 2024-03-28
   Features:
