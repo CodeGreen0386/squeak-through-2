@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.4
+Date: 2024-07-27
+  Bugfixes:
+    - Fixed remove collision settings not working correctly
+    - Fixed prototype squeak_behaviour not working correctly
+---------------------------------------------------------------------------------------------------
 Version: 0.0.3
 Date: 2024-06-13
   Locale:

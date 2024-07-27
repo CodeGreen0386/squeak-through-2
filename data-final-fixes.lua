@@ -1,7 +1,9 @@
 local const = require("const") --[[@as Squeakthrough.const]]
 local cmu = require("collision-mask-util")
 
-local character_box = data.raw.character.character.collision_box --[[@as data.BoundingBox]]
+local character = data.raw.character.character
+
+local character_box = character.collision_box --[[@as data.BoundingBox]]
 character_box[1][1] = character_box[1][1] + 1/256
 character_box[1][2] = character_box[1][2] + 1/256
 character_box[2][1] = character_box[2][1] - 1/256
@@ -32,10 +34,51 @@ local remove_collision = settings.startup["sqt-remove-collision"].value
 local remove_types = parse_csv(settings.startup["sqt-remove-collision-types"].value)
 local remove_names = parse_csv(settings.startup["sqt-remove-collision-names"].value)
 
+---@type table<string, table<string, data.EntityPrototype>>
+local downgrades = {}
+
+for ptype in pairs(defines.prototypes.entity) do
+    for name, prototype in pairs(data.raw[ptype]) do ---@cast prototype data.EntityPrototype
+        if prototype.next_upgrade then
+            local downgrade = downgrades[prototype.next_upgrade] or {}
+            downgrades[prototype.next_upgrade] = downgrade
+            downgrade[name] = prototype
+        end
+    end
+end
+
+local character_mask = cmu.get_mask(character)
+
+---@param entity data.EntityPrototype
+local function remove_colliding_layers(entity)
+    local mask = cmu.get_mask(entity)
+    for _, layer in pairs(character_mask) do
+        if cmu.mask_contains_layer(mask, layer) then
+            cmu.remove_layer(mask, layer)
+        end
+    end
+    return mask
+end
+
+removed_layers = {}
+
 ---@param prototype data.EntityPrototype
 local function remove_player_collision(prototype)
-    prototype.collision_mask = cmu.get_mask(prototype)
-    cmu.remove_layer(prototype.collision_mask, "player-layer")
+    if removed_layers[prototype.name] then return end
+    removed_layers[prototype.name] = true
+
+    prototype.collision_mask = remove_colliding_layers(prototype)
+
+    if prototype.next_upgrade then
+        local entity = data.raw[prototype.type][prototype.next_upgrade]
+        entity.collision_mask = remove_player_collision(entity)
+    end
+
+    if downgrades[prototype.name] then
+        for _, downgrade in pairs(downgrades[prototype.name]) do
+            downgrade.collision_mask = remove_player_collision(downgrade)
+        end
+    end
 end
 
 ---@param n number
@@ -50,7 +93,7 @@ local function trim(n, override)
     return (base + new_decimal) * sign
 end
 
-local prototypes = cmu.collect_prototypes_colliding_with_mask(cmu.get_mask(data.raw.character.character))
+local prototypes = cmu.collect_prototypes_colliding_with_mask(cmu.get_mask(character))
 ---@cast prototypes data.EntityPrototype[]
 for _, prototype in pairs(prototypes) do
 
@@ -67,7 +110,7 @@ for _, prototype in pairs(prototypes) do
     if blacklist_types[prototype.type] then goto continue end
 
     ---@diagnostic disable-next-line: undefined-field
-    if prototype.sqeak_behaviour == false then goto continue end
+    if prototype.squeak_behaviour == false then goto continue end
 
     local is_disabled = disabled_types[prototype.type]
     if is_disabled ~= false then goto continue end
