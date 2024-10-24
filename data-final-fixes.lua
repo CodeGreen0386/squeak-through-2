@@ -38,13 +38,16 @@ local remove_names = parse_csv(settings.startup["sqt-remove-collision-names"].va
 local downgrades = {}
 
 for ptype in pairs(defines.prototypes.entity) do
-    for name, prototype in pairs(data.raw[ptype]) do ---@cast prototype data.EntityPrototype
+    local prototypes = data.raw[ptype]
+    if not prototypes then goto continue end
+    for name, prototype in pairs(prototypes) do
         if prototype.next_upgrade then
             local downgrade = downgrades[prototype.next_upgrade] or {}
             downgrades[prototype.next_upgrade] = downgrade
             downgrade[name] = prototype
         end
     end
+    ::continue::
 end
 
 local character_mask = cmu.get_mask(character)
@@ -52,10 +55,8 @@ local character_mask = cmu.get_mask(character)
 ---@param entity data.EntityPrototype
 local function remove_colliding_layers(entity)
     local mask = cmu.get_mask(entity)
-    for _, layer in pairs(character_mask) do
-        if cmu.mask_contains_layer(mask, layer) then
-            cmu.remove_layer(mask, layer)
-        end
+    for layer in pairs(character_mask.layers) do
+        mask.layers[layer] = nil
     end
     return mask
 end
