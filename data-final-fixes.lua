@@ -71,13 +71,13 @@ local function remove_player_collision(prototype)
     prototype.collision_mask = remove_colliding_layers(prototype)
 
     if prototype.next_upgrade then
-        local entity = data.raw[prototype.type][prototype.next_upgrade]
-        entity.collision_mask = remove_player_collision(entity)
+        local next_upgrade = data.raw[prototype.type][prototype.next_upgrade]
+        remove_player_collision(next_upgrade)
     end
 
     if downgrades[prototype.name] then
         for _, downgrade in pairs(downgrades[prototype.name]) do
-            downgrade.collision_mask = remove_player_collision(downgrade)
+            remove_player_collision(downgrade)
         end
     end
 end
