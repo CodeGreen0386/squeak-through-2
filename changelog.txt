@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 2026-01-07
+  Bugfixes:
+    - Fixed missing selector combinator in circuit setting
+  Compatibility:
+    - Removed old Industrial Revolution 3 compatibility
+---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 2024-10-26
   Bugfixes:

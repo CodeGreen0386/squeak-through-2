@@ -15,6 +15,7 @@ const.groups = {
         "lamp",
         "power-switch",
         "programmable-speaker",
+        "selector-combinator",
     },
     drills = {
         "mining-drill",
