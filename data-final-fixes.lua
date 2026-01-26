@@ -98,6 +98,9 @@ local prototypes = cmu.collect_prototypes_colliding_with_mask(cmu.get_mask(chara
 ---@cast prototypes data.EntityPrototype[]
 for _, prototype in pairs(prototypes) do
 
+    local mask = cmu.get_mask(prototype)
+    if mask.colliding_with_tiles_only then goto continue end
+
     if remove_collision and remove_names[prototype.name] then
         remove_player_collision(prototype)
         goto continue
@@ -145,7 +148,6 @@ for _, prototype in pairs(prototypes) do
     end
 
     if modified then
-        prototype.map_generator_bounding_box = collision_box
         prototype.collision_box = {{values.ltx, values.lty}, {values.rbx, values.rby}}
     end
 
