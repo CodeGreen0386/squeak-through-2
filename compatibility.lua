@@ -1,4 +1,4 @@
-local cmu = require("collision-mask-util")
+local cmu = require("collision-mask-util") ---@diagnostic disable-line: unresolved-require
 
 -- IndustrialRevolution3
 -- do

@@ -1,13 +1,17 @@
-local const = require("const") --[[@as Squeakthrough.const]]
-local cmu = require("collision-mask-util")
+---@namespace SqueakThrough2
+
+local const = require("const")
+local cmu = require("collision-mask-util") ---@diagnostic disable-line: unresolved-require
 
 local character = data.raw.character.character
 
 local character_box = character.collision_box --[[@as data.BoundingBox]]
-character_box[1][1] = math.min(0, character_box[1][1] + 1/256)
-character_box[1][2] = math.min(0, character_box[1][2] + 1/256)
-character_box[2][1] = math.max(0, character_box[2][1] - 1/256)
-character_box[2][2] = math.max(0, character_box[2][2] - 1/256)
+if character_box then
+    character_box[1][1] = math.min(0, character_box[1][1] + 1/256)
+    character_box[1][2] = math.min(0, character_box[1][2] + 1/256)
+    character_box[2][1] = math.max(0, character_box[2][1] - 1/256)
+    character_box[2][2] = math.max(0, character_box[2][2] - 1/256)
+end
 
 ---@type table<string, boolean>
 local disabled_types = {}
@@ -71,7 +75,7 @@ local function remove_player_collision(prototype)
     prototype.collision_mask = remove_colliding_layers(prototype)
 
     if prototype.next_upgrade then
-        local next_upgrade = data.raw[prototype.type][prototype.next_upgrade]
+        local next_upgrade = data.raw[prototype.type][prototype.next_upgrade] --[[@as data.EntityPrototype]]
         remove_player_collision(next_upgrade)
     end
 
@@ -130,11 +134,12 @@ for _, prototype in pairs(prototypes) do
     end
 
     local lt, rb = collision_box[1], collision_box[2]
+    ---@type table<string, double>
     local values = {
-        ltx = lt.x or lt[1],
-        lty = lt.y or lt[2],
-        rbx = rb.x or rb[1],
-        rby = rb.y or rb[2]
+        ltx = lt.x or lt[1] --[[@as double]],
+        lty = lt.y or lt[2] --[[@as double]],
+        rbx = rb.x or rb[1] --[[@as double]],
+        rby = rb.y or rb[2] --[[@as double]],
     }
 
     local override = const.overrides[prototype.type]

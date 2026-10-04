@@ -1,4 +1,5 @@
----@class Squeakthrough.const
+---@namespace SqueakThrough2
+
 local const = {}
 
 const.groups = {
